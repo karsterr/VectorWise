@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  vectorwise:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vectorwise-api
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount the pre-built index file
+      - ./index.faiss:/app/index.faiss:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
