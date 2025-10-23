@@ -14,8 +14,8 @@ import statistics
 # Configuration
 API_URL = "http://localhost:8000/search"
 N_QUERIES = 1000  # Number of test queries
-K = 10            # Number of neighbors to retrieve
-DIM = 128         # Vector dimension
+K = 10  # Number of neighbors to retrieve
+DIM = 128  # Vector dimension
 
 print("=" * 70)
 print("VectorWise - Performance Benchmark")
@@ -23,11 +23,11 @@ print("=" * 70)
 
 # Step 1: Load data and indexes
 print("\n[1/4] Loading vectors and indexes...")
-vectors = np.load('vectors.npy')
+vectors = np.load("vectors.npy")
 print(f"✓ Loaded {len(vectors):,} vectors")
 
 # Load HNSW index
-hnsw_index = faiss.read_index('index.faiss')
+hnsw_index = faiss.read_index("index.faiss")
 print(f"✓ Loaded HNSW index with {hnsw_index.ntotal:,} vectors")
 
 # Create brute-force index for ground truth
@@ -43,7 +43,7 @@ query_indices = np.random.randint(0, len(vectors), N_QUERIES)
 queries = vectors[query_indices].copy()
 
 # Add some noise to make it more realistic
-queries += np.random.randn(N_QUERIES, DIM).astype('float32') * 0.1
+queries += np.random.randn(N_QUERIES, DIM).astype("float32") * 0.1
 faiss.normalize_L2(queries)
 print(f"✓ Generated {N_QUERIES:,} test queries")
 
@@ -71,14 +71,14 @@ latencies = []
 
 for i in range(N_QUERIES):
     query = queries[i].tolist()
-    
+
     start_time = time.time()
     response = requests.post(API_URL, json={"query_vector": query, "k": K})
     latency = (time.time() - start_time) * 1000  # Convert to ms
-    
+
     if response.status_code == 200:
         latencies.append(latency)
-    
+
     if (i + 1) % 100 == 0:
         print(f"   Progress: {i+1}/{N_QUERIES} queries")
 
@@ -126,7 +126,7 @@ print(f"   - Max:       {max_recall*100:.2f}%")
 print("\n" + "=" * 70)
 print("HNSW INDEX PARAMETERS")
 print("=" * 70)
-if hasattr(hnsw_index, 'hnsw'):
+if hasattr(hnsw_index, "hnsw"):
     print(f"M (connections per layer):      {hnsw_index.hnsw.max_level}")
     print(f"efConstruction (build-time):    200")
     print(f"efSearch (search-time):         {hnsw_index.hnsw.efSearch}")
@@ -175,16 +175,16 @@ results = {
         "average": round(avg_latency, 2),
         "median": round(median_latency, 2),
         "p95": round(p95_latency, 2),
-        "p99": round(p99_latency, 2)
+        "p99": round(p99_latency, 2),
     },
     "recall_at_k": {
         "average": round(avg_recall * 100, 2),
         "min": round(min_recall * 100, 2),
-        "max": round(max_recall * 100, 2)
-    }
+        "max": round(max_recall * 100, 2),
+    },
 }
 
-with open('benchmark_results.json', 'w') as f:
+with open("benchmark_results.json", "w") as f:
     json.dump(results, f, indent=2)
 
 print("\n📁 Results saved to 'benchmark_results.json'")
