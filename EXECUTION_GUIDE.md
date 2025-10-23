@@ -9,6 +9,7 @@ This guide walks you through the complete execution of the VectorWise project, f
 ## ✅ Prerequisites Checklist
 
 Before starting, ensure you have:
+
 - [ ] Python 3.11 or higher
 - [ ] pip (Python package manager)
 - [ ] Docker and Docker Compose (for containerized deployment)
@@ -27,6 +28,7 @@ pip install -r requirements.txt
 ```
 
 **Expected packages:**
+
 - fastapi==0.104.1
 - uvicorn[standard]==0.24.0
 - pydantic==2.5.0
@@ -35,6 +37,7 @@ pip install -r requirements.txt
 - requests==2.31.0
 
 **Verification:**
+
 ```bash
 python -c "import faiss; import fastapi; print('✅ Dependencies installed')"
 ```
@@ -49,6 +52,7 @@ python generate_data.py
 ```
 
 **What this does:**
+
 1. Generates 1,000,000 random vectors (128 dimensions each)
 2. Normalizes vectors using L2 normalization
 3. Builds HNSW index with M=32, efConstruction=200
@@ -56,6 +60,7 @@ python generate_data.py
 5. Saves `index.faiss` (~600 MB)
 
 **Expected output:**
+
 ```
 ============================================================
 VectorWise - Data Generation & Index Building
@@ -96,6 +101,7 @@ File size: 627.45 MB (index.faiss)
 **Time estimate:** 1-2 minutes on modern hardware
 
 **Verification:**
+
 ```bash
 ls -lh vectors.npy index.faiss
 # Should show both files with sizes ~500MB and ~600MB
@@ -121,6 +127,7 @@ docker-compose logs -f vectorwise
 ```
 
 **Expected output:**
+
 ```
 [+] Building 15.2s (12/12) FINISHED
 [+] Running 1/1
@@ -143,6 +150,7 @@ uvicorn api.main:app --reload
 ```
 
 **Expected output:**
+
 ```
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [12345]
@@ -166,6 +174,7 @@ python test_api.py
 ```
 
 **Expected output:**
+
 ```
 ============================================================
 VectorWise API Test Suite
@@ -217,6 +226,7 @@ python benchmark.py
 ```
 
 **Expected output:**
+
 ```
 ======================================================================
 VectorWise - Performance Benchmark
@@ -288,6 +298,7 @@ Benchmark complete!
 **Time estimate:** 5-10 minutes
 
 **Verification:**
+
 ```bash
 cat benchmark_results.json | python -m json.tool
 ```
@@ -299,6 +310,7 @@ cat benchmark_results.json | python -m json.tool
 Open your browser and visit:
 
 1. **Swagger UI:** http://localhost:8000/docs
+
    - Interactive API documentation
    - Try out endpoints directly
 
@@ -345,6 +357,7 @@ python examples.py
 ```
 
 This demonstrates:
+
 - Basic vector search
 - Batch searching
 - Different k values
@@ -397,19 +410,25 @@ docker-compose up --build -d
 ## 🐛 Troubleshooting
 
 ### Issue: "ModuleNotFoundError: No module named 'faiss'"
+
 **Solution:**
+
 ```bash
 pip install faiss-cpu
 ```
 
 ### Issue: "FileNotFoundError: index.faiss"
+
 **Solution:**
+
 ```bash
 python generate_data.py
 ```
 
 ### Issue: "Connection refused" when testing
+
 **Solution:**
+
 ```bash
 # Check if service is running
 docker-compose ps
@@ -418,7 +437,9 @@ curl http://localhost:8000/
 ```
 
 ### Issue: "Port 8000 already in use"
+
 **Solution:**
+
 ```bash
 # Find and kill the process using port 8000
 lsof -ti:8000 | xargs kill -9
@@ -431,19 +452,20 @@ lsof -ti:8000 | xargs kill -9
 
 Based on the implementation:
 
-| Metric | Target | Expected |
-|--------|--------|----------|
-| Latency (Avg) | <10ms | 4-6ms ✅ |
-| Latency (P95) | <20ms | ~8ms ✅ |
-| Recall@10 | ≥95% | 95-98% ✅ |
-| Index Build Time | <5min | 1-2min ✅ |
-| Memory Usage | <2GB | ~1.2GB ✅ |
+| Metric           | Target | Expected  |
+| ---------------- | ------ | --------- |
+| Latency (Avg)    | <10ms  | 4-6ms ✅  |
+| Latency (P95)    | <20ms  | ~8ms ✅   |
+| Recall@10        | ≥95%   | 95-98% ✅ |
+| Index Build Time | <5min  | 1-2min ✅ |
+| Memory Usage     | <2GB   | ~1.2GB ✅ |
 
 ---
 
 ## ✅ Success Criteria
 
 After completing all steps, you should have:
+
 - [x] Generated 1M vectors and built HNSW index
 - [x] FastAPI service running on port 8000
 - [x] All API tests passing

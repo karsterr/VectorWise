@@ -5,6 +5,7 @@
 ## � System Overview
 
 ### Architecture
+
 - **Backend**: FastAPI (Python 3.11)
 - **Vector Search**: Faiss HNSW Index
 - **Dataset**: 1M vectors, 128 dimensions
@@ -12,11 +13,12 @@
 - **API Port**: 8000
 
 ### Key Features
+
 ✅ Sub-10ms average query latency  
 ✅ 95%+ Recall@10 accuracy  
 ✅ REST API with automatic documentation  
 ✅ Containerized deployment  
-✅ Health checks and monitoring  
+✅ Health checks and monitoring
 
 ## 🏗️ Project Structure
 
@@ -37,6 +39,7 @@ VectorWise/
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Python 3.11+
 - Docker & Docker Compose
 - 2GB+ RAM
@@ -54,10 +57,12 @@ python generate_data.py
 ```
 
 This creates:
+
 - `vectors.npy` - 1 million 128-dimensional vectors (~500 MB)
 - `index.faiss` - Optimized HNSW index (~600 MB)
 
 **HNSW Parameters Used:**
+
 - `M = 32` - Number of connections per layer
 - `efConstruction = 200` - Build-time accuracy parameter
 
@@ -92,7 +97,7 @@ curl http://localhost:8000/
 curl -X POST http://localhost:8000/search \
   -H "Content-Type: application/json" \
   -d '{
-    "query_vector": [0.1, 0.2, ..., 0.5],  
+    "query_vector": [0.1, 0.2, ..., 0.5],
     "k": 10
   }'
 ```
@@ -109,9 +114,11 @@ python benchmark.py
 ### Endpoints
 
 #### `GET /`
+
 Health check endpoint.
 
 **Response:**
+
 ```json
 {
   "service": "VectorWise",
@@ -121,9 +128,11 @@ Health check endpoint.
 ```
 
 #### `POST /search`
+
 Perform k-NN search.
 
 **Request Body:**
+
 ```json
 {
   "query_vector": [float array of 128 dimensions],
@@ -132,6 +141,7 @@ Perform k-NN search.
 ```
 
 **Response:**
+
 ```json
 {
   "indices": [123, 456, 789, ...],
@@ -140,9 +150,11 @@ Perform k-NN search.
 ```
 
 #### `GET /stats`
+
 Get index statistics.
 
 **Response:**
+
 ```json
 {
   "total_vectors": 1000000,
@@ -156,6 +168,7 @@ Get index statistics.
 ### Interactive API Documentation
 
 Once the service is running, visit:
+
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
 
@@ -165,40 +178,42 @@ Performance measured on a dataset of 1M vectors (128-dim) using 1000 test querie
 
 ### Latency Results
 
-| Metric | Value |
-|--------|-------|
+| Metric              | Value   |
+| ------------------- | ------- |
 | **Average Latency** | ~4-6 ms |
-| **Median Latency** | ~4 ms |
-| **P95 Latency** | ~8 ms |
-| **P99 Latency** | ~12 ms |
+| **Median Latency**  | ~4 ms   |
+| **P95 Latency**     | ~8 ms   |
+| **P99 Latency**     | ~12 ms  |
 
 ### Recall Results
 
-| Metric | Value |
-|--------|-------|
-| **Recall@10** | **95-98%** |
-| **Minimum Recall** | 90% |
-| **Maximum Recall** | 100% |
+| Metric             | Value      |
+| ------------------ | ---------- |
+| **Recall@10**      | **95-98%** |
+| **Minimum Recall** | 90%        |
+| **Maximum Recall** | 100%       |
 
 ### HNSW Parameter Optimization
 
 The following parameters were optimized to achieve **95%+ Recall@10** while maintaining low latency:
 
-| Parameter | Value | Impact |
-|-----------|-------|--------|
-| `M` | 32 | Number of bi-directional links per node. Higher = better recall, more memory |
-| `efConstruction` | 200 | Size of candidate list during index build. Higher = better quality, slower build |
-| `efSearch` | 64 | Size of candidate list during search. Higher = better recall, slower search |
+| Parameter        | Value | Impact                                                                           |
+| ---------------- | ----- | -------------------------------------------------------------------------------- |
+| `M`              | 32    | Number of bi-directional links per node. Higher = better recall, more memory     |
+| `efConstruction` | 200   | Size of candidate list during index build. Higher = better quality, slower build |
+| `efSearch`       | 64    | Size of candidate list during search. Higher = better recall, slower search      |
 
 ### Performance Trade-offs
 
 **Latency vs. Recall**:
+
 - Increasing `efSearch` improves recall but increases query latency
 - Current configuration (efSearch=64) provides optimal balance
 - For use cases requiring <5ms latency, reduce `efSearch` to 32-48
 - For use cases requiring >98% recall, increase `efSearch` to 100+
 
 **Memory vs. Speed**:
+
 - HNSW index (~600 MB) fits in memory for fast access
 - Index size scales with `M` parameter and dataset size
 - Alternative: Use `IndexIVFFlat` for lower memory, slightly higher latency
@@ -231,12 +246,13 @@ services:
       resources:
         limits:
           memory: 2G
-          cpus: '2'
+          cpus: "2"
 ```
 
 ## 🧪 Testing
 
 ### Unit Tests
+
 ```bash
 # Run API tests
 pytest tests/
@@ -246,6 +262,7 @@ pytest --cov=api tests/
 ```
 
 ### Load Testing
+
 ```bash
 # Using Apache Bench
 ab -n 1000 -c 10 -p query.json -T application/json \
@@ -281,31 +298,41 @@ docker-compose down -v
 ## 🐛 Troubleshooting
 
 ### Issue: Index file not found
+
 ```
 FileNotFoundError: index.faiss
 ```
+
 **Solution**: Run `python generate_data.py` first to create the index.
 
 ### Issue: Out of memory
+
 ```
 MemoryError or Container killed (OOM)
 ```
+
 **Solution**: Reduce dataset size or increase Docker memory limits.
 
 ### Issue: Slow queries
+
 ```
 Latency > 50ms
 ```
-**Solution**: 
+
+**Solution**:
+
 - Reduce `efSearch` parameter
 - Check system resources (CPU, memory)
 - Ensure index is loaded in memory
 
 ### Issue: Low recall
+
 ```
 Recall@10 < 95%
 ```
+
 **Solution**:
+
 - Increase `efSearch` in `api/main.py`
 - Rebuild index with higher `efConstruction` value
 - Increase `M` parameter for denser graph
@@ -313,16 +340,19 @@ Recall@10 < 95%
 ## � Scaling Considerations
 
 ### Horizontal Scaling
+
 - Deploy multiple instances behind a load balancer (Nginx, HAProxy)
 - Each instance loads the same read-only index
 - Use sticky sessions if needed
 
 ### Index Updates
+
 - For static datasets: Rebuild index periodically offline
 - For dynamic datasets: Consider online index update strategies
 - Use Faiss `IndexIDMap` for delete/update operations
 
 ### Production Recommendations
+
 - Use GPU-accelerated Faiss for larger datasets (faiss-gpu)
 - Implement caching layer (Redis) for frequent queries
 - Add request queuing (Celery) for batch processing
@@ -331,6 +361,7 @@ Recall@10 < 95%
 ## 🛠️ Development
 
 ### Local Development Setup
+
 ```bash
 # Create virtual environment
 python -m venv venv
@@ -347,6 +378,7 @@ python benchmark.py
 ```
 
 ### Code Quality
+
 ```bash
 # Format code
 black api/ generate_data.py benchmark.py
@@ -372,6 +404,7 @@ This project is provided as-is for educational and commercial use.
 ## 🤝 Contributing
 
 Contributions are welcome! Please:
+
 1. Fork the repository
 2. Create a feature branch
 3. Submit a pull request with tests
@@ -380,4 +413,4 @@ Contributions are welcome! Please:
 
 **Built with ❤️ by the VectorWise Team**
 
-*Last Updated: October 2025*
+_Last Updated: October 2025_
