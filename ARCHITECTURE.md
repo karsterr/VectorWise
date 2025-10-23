@@ -155,18 +155,18 @@
     Dataset Size:    1,000,000 vectors
     Dimension:       128
     Index Type:      HNSW (Hierarchical Navigable Small World)
-    
+
     Parameters:
     ├─ M:                32  (graph connectivity)
     ├─ efConstruction:   200 (build quality)
     └─ efSearch:         64  (search quality)
-    
+
     Performance:
     ├─ Latency (avg):    4-6 ms    ⚡
     ├─ Latency (P95):    ~8 ms     ⚡
     ├─ Recall@10:        95-98%    🎯
     └─ Memory:           ~600 MB   💾
-    
+
     Trade-offs:
     ├─ Increase efSearch  → Higher recall, Higher latency
     ├─ Decrease efSearch  → Lower latency, Lower recall
@@ -179,13 +179,13 @@
 
     Development:
     $ uvicorn api.main:app --reload
-    
+
     Production (Docker):
     $ docker-compose up --build -d
-    
+
     Testing:
     $ python test_api.py
-    
+
     Benchmarking:
     $ python benchmark.py
 
@@ -201,7 +201,7 @@
     │  • Pydantic  │  │  • L2 dist   │  │  • Compose   │
     │  • Async     │  │  • Sub-10ms  │  │  • Volume    │
     └──────────────┘  └──────────────┘  └──────────────┘
-    
+
     ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
     │    NumPy     │  │   Uvicorn    │  │   Python     │
     │              │  │              │  │              │
