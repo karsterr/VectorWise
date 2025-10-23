@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Generated data files
+vectors.npy
+index.faiss
+benchmark_results.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Docker
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
